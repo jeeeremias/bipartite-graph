@@ -24,6 +24,7 @@ typedef struct Graph_Vertex
 typedef struct Vertex_Adjacency
 {
   struct Graph_Vertex* vertex;
+  struct Vertex_Adjacency* prev;
   struct Vertex_Adjacency* next;
 } VertexAdjacent;
 
@@ -46,7 +47,7 @@ clean_graph (int n)
 {
   VertexAdjacent* adjacent;
   VertexAdjacent* adjacent_aux;
-  for (int i = 0; i < MAX_VERTEX; i++)
+  for (int i = 0; i < n; i++)
     {
       graph[i].visited = FALSE;
       adjacent = graph[i].adjacent;
@@ -71,21 +72,40 @@ addEdge (int u, int v)
 	  (VertexAdjacent*) (malloc (sizeof(VertexAdjacent)));
       graph[u - 1].adjacent->vertex = &graph[v - 1];
       graph[u - 1].adjacent->next = NULL;
+      graph[u - 1].adjacent->prev = NULL;
     }
   else
     {
       // Sorted
       adjacent = graph[u - 1].adjacent;
-      while (adjacent->next != NULL && adjacent->vertex->value < v)
+      if (v < graph[u - 1].adjacent->vertex->value)
 	{
-	  adjacent = adjacent->next;
+	  graph[u - 1].adjacent = (VertexAdjacent*) (malloc (
+	      sizeof(VertexAdjacent)));
+	  graph[u - 1].adjacent->vertex = &graph[v - 1];
+	  graph[u - 1].adjacent->next = adjacent;
+	  graph[u - 1].adjacent->prev = NULL;
+	  graph[u - 1].adjacent->next->prev = graph[u - 1].adjacent;
 	}
-      if (adjacent->next == NULL || adjacent->next->vertex->value != v)
+      else
 	{
-	  adjacent_aux = adjacent->next;
-	  adjacent->next = (VertexAdjacent*) (malloc (sizeof(VertexAdjacent)));
-	  adjacent->next->vertex = &graph[v - 1];
-	  adjacent->next->next = adjacent_aux;
+	  while (adjacent->next != NULL && adjacent->next->vertex->value < v)
+	    {
+	      adjacent = adjacent->next;
+	    }
+	  if (adjacent->next == NULL || adjacent->next->vertex->value != v)
+	    {
+	      adjacent_aux = adjacent->next;
+	      adjacent->next = (VertexAdjacent*) (malloc (
+		  sizeof(VertexAdjacent)));
+	      adjacent->next->vertex = &graph[v - 1];
+	      adjacent->next->prev = adjacent;
+	      adjacent->next->next = adjacent_aux;
+	      if (adjacent->next->next != NULL)
+		{
+		  adjacent->next->next->prev = adjacent->next;
+		}
+	    }
 	}
     }
 }
