@@ -34,7 +34,8 @@ Vertex* queue[MAX_VERTEX];
 void
 init_graph ()
 {
-  for (int i = 0; i < MAX_VERTEX; i++)
+  int i;
+  for (i = 0; i < MAX_VERTEX; i++)
     {
       graph[i].value = i + 1;
       graph[i].visited = FALSE;
@@ -45,9 +46,10 @@ init_graph ()
 void
 clean_graph (int n)
 {
+  int i;
   VertexAdjacent* adjacent;
   VertexAdjacent* adjacent_aux;
-  for (int i = 0; i < n; i++)
+  for (i = 0; i < n; i++)
     {
       graph[i].visited = FALSE;
       adjacent = graph[i].adjacent;
@@ -113,7 +115,7 @@ addEdge (int u, int v)
 int
 main (void)
 {
-  int N, M, u, v, c, i, j, init_queue, end_queue;
+  int N, M, u, v, c, init_queue, end_queue;
   char bipartite;
   VertexAdjacent* adjacent;
   init_graph ();
